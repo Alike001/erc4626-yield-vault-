@@ -1,66 +1,44 @@
-## Foundry
+# ERC-4626 Yield Vault
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+A tokenized yield vault where users deposit an ERC-20 asset and receive shares representing their proportion of the vault. Built with Foundry.
 
-Foundry consists of:
+## What it does
 
-- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
-- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
-- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
-- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+Users deposit an ERC-20 token and receive shares. As yield is added to the vault, each share becomes worth more tokens. Users can withdraw their assets at any time by burning their shares. Share conversion always reflects the current ratio of total assets to total shares ensuring fair distribution of yield. A management fee is applied on yield and collected by the owner.
 
-## Documentation
+## Setup
 
-https://book.getfoundry.sh/
+git clone https://github.com/Alike001/erc4626-yield-vault
+cd erc4626-yield-vault
+forge install
+forge build
 
-## Usage
+## Run Tests
 
-### Build
+forge test -vvv
 
-```shell
-$ forge build
-```
+## Contract Functions
 
-### Test
+- deposit() — user deposits assets and receives shares
+- mint() — user specifies exact shares to receive and pays the required assets
+- withdraw() — user specifies exact assets to receive and burns the required shares
+- redeem() — user burns exact shares and receives the corresponding assets
+- addYield() — adds yield to the vault increasing share value
+- collectFees() — owner collects accumulated management fees
 
-```shell
-$ forge test
-```
+## Key Rules
 
-### Format
+- First deposit: 1 share = 1 asset
+- Share value increases as yield is added
+- Deposits round down to protect the vault
+- Withdrawals round up to protect the vault
+- Zero share deposits are rejected
+- Withdrawals exceeding user balance are rejected
+- Management fee applied only on yield not on deposits
+- Only owner can collect fees
 
-```shell
-$ forge fmt
-```
+## Built with
 
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+- Solidity ^0.8.20
+- Foundry
+- Forge tests with vm.warp, vm.prank, vm.expectRevert
